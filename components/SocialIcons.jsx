@@ -4,7 +4,7 @@ const socialLinks = [
   { name: "GitHub", url: "https://github.com/abdulhadi3021", icon: "💻" },
   { name: "Twitter", url: "https://twitter.com", icon: "🐦" },
   { name: "LinkedIn", url: "https://linkedin.com", icon: "🔗" },
-  { name: "Instagram", url: "https://instagram.comhttps://www.instagram.com/featurewebdeveloper/", icon: "📷" },
+  { name: "Instagram", url: "https://www.instagram.com/techmalik._.1/", icon: "📷" },
 ];
 
 const SocialIcons = () => {
