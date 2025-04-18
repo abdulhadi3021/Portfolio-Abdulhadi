@@ -1,6 +1,7 @@
 {
   "name": "portfolio-me-new",
   "version": "0.1.0",
+    "build": "next build && next export",
   "private": true,
   "scripts": {
     "lint": "next lint",
