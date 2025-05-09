@@ -20,7 +20,7 @@ const Projects = () => {
       tags: ["Next.js", "Firebase", "Tailwind CSS"],
       github: "#",
       live: "#",
-      image: "/images/task-app-demo.jpg", // Update with your actual image path
+      image: "https://media-hosting.imagekit.io/6ebebca3932541ea/bandicam%202025-05-09%2016-38-52-624.jpg?Expires=1841403329&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=j316VcIxHB0mcY9g1UayRKih3Hm6eGm-TY3MifZqL-Fo8ObrRsjXcT7wSRBJEEaXgrjM-t4x5PLa2gZ6m9XG0G8zZUC8BfM7Sx8G609yCQLNq0yl8wCA0ivQQcUmDbgdhQymy~zuQP43XPdxA12VDi7sM8DuDgXOPpHLfIkK~QjMsPFXdCTzDC1CF28SRKuLO8Db1lOUQkNx9dK9yF4c71o4j~2jizeMRLBsZGAG6iuLqCHOIeMUL-dL05K61NiMAzaaE7JWKFOEDH-oFd-JcU~UfsSGfDL6WhPPZstiqDGL0ZlINfePyYksrIUTZyk0Dgm0tI26nJczvEgfXkcx1g__", // Update with your actual image path
       alt: "Task Management App Screenshot"
     },
     {
