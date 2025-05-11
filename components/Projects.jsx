@@ -11,11 +11,8 @@ const Projects = () => {
       tags: ["React", "Node.js", "MongoDB"],
       github: "#",
       live: "https://liogi-store.vercel.app/",
-<img
-  src="https://media-hosting.imagekit.io/f151620d279e4f94/your-image.jpg"
-  alt="External Image"
-  width="600"
-/>      alt: "E-Commerce Platform Screenshot"
+      image: "/3.png", // ✅ Correct
+      alt: "E-Commerce Platform Screenshot"
     },
     {
       title: "Task Management App",
@@ -23,7 +20,7 @@ const Projects = () => {
       tags: ["Next.js", "Firebase", "Tailwind CSS"],
       github: "#",
       live: "https://curriculum-control-center.vercel.app/",
-      image: "public/2.png", // Update with your actual image path
+      image: "/2.png", // ✅ Correct
       alt: "Task Management App Screenshot"
     },
     {
@@ -32,7 +29,7 @@ const Projects = () => {
       tags: ["React", "Framer Motion", "CSS"],
       github: "#",
       live: "https://abdulhadi-portfolio1.vercel.app/",
-      image: "public/1.png", // Replace with the actual image URL
+      image: "/1.png", // ✅ Correct
       alt: "Portfolio Website Screenshot"
     },
   ];
