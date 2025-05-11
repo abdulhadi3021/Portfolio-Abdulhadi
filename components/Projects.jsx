@@ -11,7 +11,7 @@ const Projects = () => {
       tags: ["React", "Node.js", "MongoDB"],
       github: "#",
       live: "#",
-      image: "/images/ecommerce-demo.jpg", // Update with your actual image path
+      image: "https://media-hosting.imagekit.io/f151620d279e4f94/bandicam%202025-05-10%2021-48-49-857.jpg?Expires=1841553005&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=K7Fh3RVH9ECE42N9KQy9CQe8sN-itx4~KiqHMkad-Bwq18dzU-Pjex96ocrOrxRI1QGb~UDcYNp8C9vXjOOHv-4RGo9hyZZIozoYNAyciESYhJ9NSFTJhNYhE4NXdcIE3NYGHUF1HVNaGGy4CXM9IAHsjX8rcgLKEjmivzRaIjDz1Ess3762q~jyPRwXFGWtAblq-oFA7PCxtRvN3IjvLCO0Bbc5x-9bH7NpjMRIAySsOZQ01hp4RLtUvO3PA3GYHDjxK5KvVjEIgtD3tbNPVHB6e-dlefMad05ffy5jdhXKMXu0t1G6HDhoolena9S133MPH4t6ytxKjfz7LDLGmg__", // Update with your actual image path
       alt: "E-Commerce Platform Screenshot"
     },
     {
@@ -29,7 +29,7 @@ const Projects = () => {
       tags: ["React", "Framer Motion", "CSS"],
       github: "http://abdulhadiportfolio.free.nf/",
       live: "http://abdulhadiportfolio.free.nf/",
-      image: "/1.jpg", // Update with your actual image path
+      image: "https://your-image-host.com/images/portfolio-website.jpg", // Replace with the actual image URL
       alt: "Portfolio Website Screenshot"
     },
   ];
