@@ -10,7 +10,7 @@ const Projects = () => {
       description: "A full-featured online store with product listings, cart, and checkout functionality.",
       tags: ["React", "Node.js", "MongoDB"],
       github: "#",
-      live: "#",
+      live: "https://liogi-store.vercel.app/",
       image: "public/3.png", // Update with your actual image path
       alt: "E-Commerce Platform Screenshot"
     },
@@ -19,7 +19,7 @@ const Projects = () => {
       description: "A productivity app for managing tasks with drag-and-drop functionality.",
       tags: ["Next.js", "Firebase", "Tailwind CSS"],
       github: "#",
-      live: "#",
+      live: "https://curriculum-control-center.vercel.app/",
       image: "public/2.png", // Update with your actual image path
       alt: "Task Management App Screenshot"
     },
@@ -27,8 +27,8 @@ const Projects = () => {
       title: "Portfolio Website",
       description: "A modern portfolio website with animations and dark mode support.",
       tags: ["React", "Framer Motion", "CSS"],
-      github: "http://abdulhadiportfolio.free.nf/",
-      live: "http://abdulhadiportfolio.free.nf/",
+      github: "#",
+      live: "https://abdulhadi-portfolio1.vercel.app/",
       image: "public/1.png", // Replace with the actual image URL
       alt: "Portfolio Website Screenshot"
     },
