@@ -11,7 +11,7 @@ const Projects = () => {
       tags: ["React", "Node.js", "MongoDB"],
       github: "#",
       live: "#",
-      image: "/3.png", // Update with your actual image path
+      image: "public/3.png", // Update with your actual image path
       alt: "E-Commerce Platform Screenshot"
     },
     {
@@ -20,7 +20,7 @@ const Projects = () => {
       tags: ["Next.js", "Firebase", "Tailwind CSS"],
       github: "#",
       live: "#",
-      image: "/2.png", // Update with your actual image path
+      image: "public/2.png", // Update with your actual image path
       alt: "Task Management App Screenshot"
     },
     {
@@ -29,7 +29,7 @@ const Projects = () => {
       tags: ["React", "Framer Motion", "CSS"],
       github: "http://abdulhadiportfolio.free.nf/",
       live: "http://abdulhadiportfolio.free.nf/",
-      image: "1.png", // Replace with the actual image URL
+      image: "public/1.png", // Replace with the actual image URL
       alt: "Portfolio Website Screenshot"
     },
   ];
