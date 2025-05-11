@@ -11,7 +11,7 @@ const Projects = () => {
       tags: ["React", "Node.js", "MongoDB"],
       github: "#",
       live: "#",
-      image: "https://media-hosting.imagekit.io/f151620d279e4f94/bandicam%202025-05-10%2021-48-49-857.jpg?Expires=1841553005&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=K7Fh3RVH9ECE42N9KQy9CQe8sN-itx4~KiqHMkad-Bwq18dzU-Pjex96ocrOrxRI1QGb~UDcYNp8C9vXjOOHv-4RGo9hyZZIozoYNAyciESYhJ9NSFTJhNYhE4NXdcIE3NYGHUF1HVNaGGy4CXM9IAHsjX8rcgLKEjmivzRaIjDz1Ess3762q~jyPRwXFGWtAblq-oFA7PCxtRvN3IjvLCO0Bbc5x-9bH7NpjMRIAySsOZQ01hp4RLtUvO3PA3GYHDjxK5KvVjEIgtD3tbNPVHB6e-dlefMad05ffy5jdhXKMXu0t1G6HDhoolena9S133MPH4t6ytxKjfz7LDLGmg__", // Update with your actual image path
+      image: "/3.png", // Update with your actual image path
       alt: "E-Commerce Platform Screenshot"
     },
     {
@@ -20,7 +20,7 @@ const Projects = () => {
       tags: ["Next.js", "Firebase", "Tailwind CSS"],
       github: "#",
       live: "#",
-      image: "https://media-hosting.imagekit.io/6ebebca3932541ea/bandicam%202025-05-09%2016-38-52-624.jpg?Expires=1841403329&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=j316VcIxHB0mcY9g1UayRKih3Hm6eGm-TY3MifZqL-Fo8ObrRsjXcT7wSRBJEEaXgrjM-t4x5PLa2gZ6m9XG0G8zZUC8BfM7Sx8G609yCQLNq0yl8wCA0ivQQcUmDbgdhQymy~zuQP43XPdxA12VDi7sM8DuDgXOPpHLfIkK~QjMsPFXdCTzDC1CF28SRKuLO8Db1lOUQkNx9dK9yF4c71o4j~2jizeMRLBsZGAG6iuLqCHOIeMUL-dL05K61NiMAzaaE7JWKFOEDH-oFd-JcU~UfsSGfDL6WhPPZstiqDGL0ZlINfePyYksrIUTZyk0Dgm0tI26nJczvEgfXkcx1g__", // Update with your actual image path
+      image: "/2.png", // Update with your actual image path
       alt: "Task Management App Screenshot"
     },
     {
@@ -29,7 +29,7 @@ const Projects = () => {
       tags: ["React", "Framer Motion", "CSS"],
       github: "http://abdulhadiportfolio.free.nf/",
       live: "http://abdulhadiportfolio.free.nf/",
-      image: "https://your-image-host.com/images/portfolio-website.jpg", // Replace with the actual image URL
+      image: "1.png", // Replace with the actual image URL
       alt: "Portfolio Website Screenshot"
     },
   ];
