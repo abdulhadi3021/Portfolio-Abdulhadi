@@ -129,7 +129,7 @@ const Hero = () => {
                   
                   <div>
       <img 
-        src="https://media-hosting.imagekit.io/00d55f2b01d34aef/me3__1_-removebg-preview.png?Expires=1839157487&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wApPhKtovdHPnkD8tfTrg4EdtAvkP7ms5n0ywE7E0PYRerzKid32Wq65jfa~Jt0dc67jrQ4~oGhox6r6k4pCyW9IMg1Y0wSIX4Umy0M6fHNm1qP7wnRhYSM1zmoyJQYrA96vGG4L17YF1j3Z~3peiZ1DmPW~xkP7JU6F28k-pDQz6ALiIiOPjLHY96RAL4NcdCbU1fhGAg-G2ax1Kz0~LZjmLDd9gBRyqLzwvzc~JXz9nx0LMlCtIGclh9g9oNJGwA7F96ckEzF-Ucw12EJ-9TTaJvrxow1n~ALw2SmsMBzSD5seW7rJbBrq2Zw-Q~T-0PWKpWcx5cRHe0z2Yi9Qng__" 
+        src="https://ik.imagekit.io/123e/me3__1_-removebg-preview.png?updatedAt=1748180684807" 
         alt="Description of image"
         style={{ width: '300px', borderRadius: '10px' }}
       />
