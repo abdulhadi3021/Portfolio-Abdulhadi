@@ -82,7 +82,7 @@ const Header = () => {
         { name: "Company History", path: "#history" },
       ]
     },
-    { name: "Contact", path: "/contact" },
+    { name: "Contact", path: "/#contact" },
   ];
 
   const handleSubMenuToggle = (itemName) => {
@@ -278,3 +278,4 @@ const Header = () => {
 };
 
 export default Header;
+
