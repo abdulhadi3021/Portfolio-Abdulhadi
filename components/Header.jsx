@@ -73,7 +73,7 @@ const Header = () => {
         { name: "Consulting", path: "#consulting" },
       ]
     },
-    { name: "Portfolio", path: "/portfolio" },
+    { name: "Portfolio", path: "/#portfolio" },
     { 
       name: "About", 
       path: "#about",
@@ -278,4 +278,5 @@ const Header = () => {
 };
 
 export default Header;
+
 
