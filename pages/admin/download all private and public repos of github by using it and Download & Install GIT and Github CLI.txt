@@ -1,0 +1,46 @@
+✅ Direct Answer (What command to run)
+
+You cannot download all repos at once with a single built-in Git command, but you can do it cleanly with one loop command after logging in.
+
+Step 1 — Login to GitHub CLI (required)
+gh auth login
+
+
+Follow the on-screen steps (choose GitHub.com, HTTPS, authenticate in browser).
+
+
+
+
+
+
+Option 1:
+
+
+Step 2 — Download ALL your repositories (one command)
+🪟 Windows (PowerShell)
+gh repo list abdulhadi30211 --limit 1000 | ForEach-Object {
+    $repo = ($_ -split "`t")[0]
+    gh repo clone $repo
+}
+
+
+📌 Replace YOUR_USERNAME with your GitHub username.
+
+
+
+
+OR    OPTION 2: 
+
+
+Step 2 — Make download folder
+mkdir all-repos
+cd all-repos
+
+Step 3 — Run CMD-compatible loop
+for /f %r in ('gh repo list abdulhadi30211 --limit 1000 --json nameWithOwner -q ".[].nameWithOwner"') do gh repo clone %r
+
+
+✅ This works in CMD
+✅ No $repo variable
+✅ No curly braces
+✅ Uses %r which is CMD format
