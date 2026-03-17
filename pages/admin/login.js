@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { createClient } from "@supabase/supabase-js"
+import { useState } from "react";
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   "https://ehieczmqbhqrtnrtthob.supabase.co",
@@ -12,9 +12,9 @@ export default function AdminLogin() {
   const [error, setError] = useState("")
 
   async function handleLogin(e) {
-    e.preventDefault()
-    setError("")
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    e.preventDefault();
+    setError("");
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) setError(error.message)
     else window.location.href = "/admin/dashboard"
   }
