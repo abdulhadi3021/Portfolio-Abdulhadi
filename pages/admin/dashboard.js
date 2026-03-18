@@ -9,8 +9,12 @@ const supabase = createClient(
 
 export default function Dashboard() {
   const [status, setStatus] = useState('loading'); // 'loading', 'authenticated', 'unauthenticated'
+  const [projects, setProjects] = useState([]);
+  const [form, setForm] = useState({ title: '', description: '', url: '', id: null });
+  const [msg, setMsg] = useState('');
   const router = useRouter();
 
+  // Authentication check
   useEffect(() => {
     let mounted = true;
     async function check() {
@@ -18,6 +22,7 @@ export default function Dashboard() {
       if (!mounted) return;
       if (data.user) {
         setStatus('authenticated');
+        loadProjects();
       } else {
         setStatus('unauthenticated');
         setTimeout(() => router.replace('/admin/login'), 500);
@@ -27,24 +32,137 @@ export default function Dashboard() {
     return () => { mounted = false; };
   }, [router]);
 
+  // Load projects
+  const loadProjects = async () => {
+    setMsg('');
+    const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+    if (error) setMsg('Could not fetch projects');
+    else setProjects(data || []);
+  };
+
+  // handle add/update
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setMsg('');
+    if (!form.title) return setMsg('Title required');
+    if (form.id) {
+      // edit
+      const { error } = await supabase.from('projects').update({
+        title: form.title, description: form.description, url: form.url,
+      }).eq('id', form.id);
+      if (error) setMsg('Failed to update.');
+      else setMsg('Project updated!');
+    } else {
+      // add new
+      const { error } = await supabase.from('projects').insert([{
+        title: form.title, description: form.description, url: form.url,
+      }]);
+      if (error) setMsg('Failed to add.');
+      else setMsg('Project added!');
+    }
+    setForm({ title: '', description: '', url: '', id: null });
+    loadProjects();
+  };
+
+  // handle edit start
+  const handleEdit = p => setForm({ ...p });
+
+  // handle delete
+  const handleDelete = async id => {
+    if (!window.confirm('Delete this project?')) return;
+    const { error } = await supabase.from('projects').delete().eq('id', id);
+    if (error) setMsg('Failed to delete.');
+    else setMsg('Project deleted!');
+    loadProjects();
+  };
+
+  // Log out
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.replace('/');
+  };
+
   if (status === 'loading' || status === 'unauthenticated') return null;
-  // Do not render any dashboard until sure user is logged in
 
   return (
-    <div className="p-10 flex flex-col items-center min-h-screen bg-gray-50">
-      <div className="bg-white glass-card rounded-xl shadow-lg p-8 max-w-xl w-full fade-in">
-        <h1 className="text-3xl font-extrabold mb-4 text-primary gradient-text text-center">
-          Welcome to the REAL Admin Dashboard!
-        </h1>
-        <p className="text-lg mb-6 text-gray-800 text-center">
-          You are successfully authenticated as an admin.
-        </p>
-        {/* Place your admin controls, links, stats, etc here */}
-        <div className="flex flex-col gap-4 items-center">
-          <a href="/" className="btn-3d bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition">
-            Go to Portfolio Home
-          </a>
+    <div className="p-10 bg-gray-50 min-h-screen">
+      <div className="bg-white glass-card rounded-xl shadow-lg p-8 max-w-2xl mx-auto fade-in">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-extrabold mb-2 text-primary gradient-text text-center">
+            Admin Dashboard
+          </h1>
+          <button onClick={handleLogout} className="btn-3d bg-red-500 text-white px-4 py-1 rounded hover:bg-red-400">Logout</button>
         </div>
+
+        {msg && <div className="mb-4 text-center font-bold text-green-600">{msg}</div>}
+
+        {/* Add/Edit Form */}
+        <form onSubmit={handleSubmit} className="mb-8 space-y-2 glass-card p-5 rounded">
+          <input
+            className="w-full p-2 border border-gray-300 rounded"
+            placeholder="Title"
+            value={form.title}
+            onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+            required
+          />
+          <input
+            className="w-full p-2 border border-gray-300 rounded"
+            placeholder="Project URL"
+            value={form.url}
+            onChange={e => setForm(f => ({ ...f, url: e.target.value }))}
+          />
+          <textarea
+            className="w-full p-2 border border-gray-300 rounded"
+            placeholder="Description"
+            value={form.description}
+            onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+          />
+          <div>
+            <button className="btn-3d bg-primary text-white px-6 py-2 rounded hover:bg-primary-dark mr-2" type="submit">
+              {form.id ? 'Update Project' : 'Add Project'}
+            </button>
+            {form.id && (
+              <button
+                className="btn-3d bg-gray-300 text-black px-4 py-2 rounded"
+                onClick={() => setForm({ title: '', description: '', url: '', id: null })}
+                type="button"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+
+        <h2 className="text-xl font-semibold mb-2">All Projects</h2>
+        {projects.length === 0 ? (
+          <div>No projects yet.</div>
+        ) : (
+          <ul className="space-y-3">
+            {projects.map(p => (
+              <li key={p.id} className="border rounded p-3 flex justify-between items-center bg-gray-100">
+                <div>
+                  <div className="font-bold">{p.title}</div>
+                  <div className="text-gray-600 text-sm">{p.description}</div>
+                  <a href={p.url} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">{p.url}</a>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(p)}
+                    className="btn-3d bg-yellow-400 px-2 py-1 rounded"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(p.id)}
+                    className="btn-3d bg-red-500 px-2 py-1 rounded text-white"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
