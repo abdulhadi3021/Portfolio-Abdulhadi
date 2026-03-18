@@ -10,8 +10,11 @@ const supabase = createClient(
 export default function Dashboard() {
   const [status, setStatus] = useState('loading'); // 'loading', 'authenticated', 'unauthenticated'
   const [projects, setProjects] = useState([]);
-  const [form, setForm] = useState({ title: '', description: '', url: '', id: null });
+  const [form, setForm] = useState({
+    title: '', description: '', url: '', repo_url: '', tags: '', image_url: '', published: true, id: null
+  });
   const [msg, setMsg] = useState('');
+  const [imgUploading, setImgUploading] = useState(false);
   const router = useRouter();
 
   // Authentication check
@@ -40,32 +43,74 @@ export default function Dashboard() {
     else setProjects(data || []);
   };
 
+  // For uploading to Supabase Storage (optional, for image upload)
+  // Edit this function if you want to enable real image uploads
+  const handleImgUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImgUploading(true);
+    const fileExt = file.name.split('.').pop();
+    const filePath = `project-images/${Date.now()}-${Math.random()}.${fileExt}`;
+    let { error } = await supabase.storage.from('project-images').upload(filePath, file);
+    if (error) {
+      setMsg('Image upload failed.');
+    } else {
+      const { data } = supabase.storage.from('project-images').getPublicUrl(filePath);
+      setForm(f => ({ ...f, image_url: data.publicUrl }));
+      setMsg('Image uploaded!');
+    }
+    setImgUploading(false);
+  };
+
   // Add or Edit project
   const handleSubmit = async e => {
     e.preventDefault();
     setMsg('');
+    let tagArray = form.tags.split(',').map(t => t.trim()).filter(Boolean);
     if (!form.title) return setMsg('Title required');
     if (form.id) {
       // Edit existing
       const { error } = await supabase.from('projects').update({
-        title: form.title, description: form.description, url: form.url
+        title: form.title,
+        description: form.description,
+        url: form.url,
+        repo_url: form.repo_url,
+        tags: tagArray,
+        image_url: form.image_url,
+        published: form.published,
       }).eq('id', form.id);
       if (error) setMsg('Failed to update.');
       else setMsg('Project updated!');
     } else {
       // Add new
       const { error } = await supabase.from('projects').insert([{
-        title: form.title, description: form.description, url: form.url
+        title: form.title,
+        description: form.description,
+        url: form.url,
+        repo_url: form.repo_url,
+        tags: tagArray,
+        image_url: form.image_url,
+        published: form.published,
       }]);
       if (error) setMsg('Failed to add.');
       else setMsg('Project added!');
     }
-    setForm({ title: '', description: '', url: '', id: null });
+    setForm({ title: '', description: '', url: '', repo_url: '', tags: '', image_url: '', published: true, id: null });
     loadProjects();
   };
 
-  // Start editing: fill form with project data
-  const handleEdit = p => setForm({ ...p });
+  // Start editing
+  const handleEdit = (p) =>
+    setForm({
+      title: p.title || '',
+      description: p.description || '',
+      url: p.url || '',
+      repo_url: p.repo_url || '',
+      tags: Array.isArray(p.tags) ? p.tags.join(', ') : p.tags || '',
+      image_url: p.image_url || '',
+      published: p.published ?? true,
+      id: p.id,
+    });
 
   // Delete project
   const handleDelete = async id => {
@@ -76,7 +121,6 @@ export default function Dashboard() {
     loadProjects();
   };
 
-  // Log out
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.replace('/');
@@ -94,7 +138,6 @@ export default function Dashboard() {
           <button onClick={handleLogout} className="btn-3d bg-red-500 text-white px-4 py-1 rounded hover:bg-red-400">Logout</button>
         </div>
 
-        {/* Message popup */}
         {msg && <div className="mb-4 text-center font-bold text-green-600">{msg}</div>}
 
         {/* Add/Edit Project Form */}
@@ -108,16 +151,48 @@ export default function Dashboard() {
           />
           <input
             className="w-full p-2 border border-gray-300 rounded"
-            placeholder="Project URL"
+            placeholder="Live App URL"
             value={form.url}
             onChange={e => setForm(f => ({ ...f, url: e.target.value }))}
           />
-          <textarea
+          <input
             className="w-full p-2 border border-gray-300 rounded"
-            placeholder="Description"
-            value={form.description}
-            onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+            placeholder="Repository URL"
+            value={form.repo_url}
+            onChange={e => setForm(f => ({ ...f, repo_url: e.target.value }))}
           />
+          <input
+            className="w-full p-2 border border-gray-300 rounded"
+            placeholder="Tags (comma separated)"
+            value={form.tags}
+            onChange={e => setForm(f => ({ ...f, tags: e.target.value }))}
+          />
+          <input
+            className="w-full p-2 border border-gray-300 rounded"
+            placeholder="Image URL (or upload below)"
+            value={form.image_url}
+            onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))}
+          />
+          {/* (Optional real image upload, needs storage bucket "project-images" in Supabase) */}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImgUpload}
+            className="block w-full"
+            disabled={imgUploading}
+          />
+          <div className="flex items-center space-x-2 mt-2">
+            <input
+              type="checkbox"
+              checked={form.published}
+              onChange={e => setForm(f => ({ ...f, published: e.target.checked }))}
+              id="published"
+            />
+            <label htmlFor="published">Published</label>
+            {form.image_url && (
+              <img src={form.image_url} alt="project" className="h-12 ml-4 rounded shadow" />
+            )}
+          </div>
           <div>
             <button className="btn-3d bg-primary text-white px-6 py-2 rounded hover:bg-primary-dark mr-2" type="submit">
               {form.id ? 'Update Project' : 'Add Project'}
@@ -125,7 +200,9 @@ export default function Dashboard() {
             {form.id && (
               <button
                 className="btn-3d bg-gray-300 text-black px-4 py-2 rounded"
-                onClick={() => setForm({ title: '', description: '', url: '', id: null })}
+                onClick={() => setForm({
+                  title: '', description: '', url: '', repo_url: '', tags: '', image_url: '', published: true, id: null
+                })}
                 type="button"
               >
                 Cancel
@@ -134,7 +211,6 @@ export default function Dashboard() {
           </div>
         </form>
 
-        {/* Project List */}
         <h2 className="text-xl font-semibold mb-2">All Projects</h2>
         {projects.length === 0 ? (
           <div>No projects yet.</div>
@@ -143,11 +219,16 @@ export default function Dashboard() {
             {projects.map(p => (
               <li key={p.id} className="border rounded p-3 flex justify-between items-center bg-gray-100">
                 <div>
-                  <div className="font-bold">{p.title}</div>
+                  <div className="font-bold">{p.title} {p.published === false && <span className="text-xs text-gray-500">(Unpublished)</span>}</div>
                   <div className="text-gray-600 text-sm">{p.description}</div>
-                  <a href={p.url} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">{p.url}</a>
+                  {p.url && <a href={p.url} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">Live App</a>}<br/>
+                  {p.repo_url && <a href={p.repo_url} className="text-green-700 underline" target="_blank" rel="noopener noreferrer">Repo</a>}
+                  {Array.isArray(p.tags) && p.tags.length > 0 && (
+                    <div className="text-xs text-gray-500 mt-1">Tags: {p.tags.join(', ')}</div>
+                  )}
+                  {p.image_url && <img src={p.image_url} alt="" className="h-12 mt-1 rounded shadow" />}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-col">
                   <button
                     onClick={() => handleEdit(p)}
                     className="btn-3d bg-yellow-400 px-2 py-1 rounded"
