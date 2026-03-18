@@ -10,45 +10,45 @@ const supabase = createClient(
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
+  const [status, setStatus] = useState('loading'); // 'loading', 'logged_in', 'logged_out', 'error', 'success'
+  const [msg, setMsg] = useState('');
   const router = useRouter();
 
-  // 1. If already logged in on mount, redirect to dashboard
+  // 1. On mount, check for already-logged-in user, but wait for state to settle
   useEffect(() => {
     let mounted = true;
-    (async () => {
+    async function check() {
       const { data } = await supabase.auth.getUser();
-      if (mounted && data.user) {
-        router.replace('/admin/dashboard');
+      if (!mounted) return;
+      if (data.user) {
+        setStatus('logged_in');
+        setTimeout(() => router.replace('/admin/dashboard'), 500);
+      } else {
+        setStatus('logged_out');
       }
-    })();
+    }
+    check();
     return () => { mounted = false; };
   }, [router]);
 
-  // 2. Handle login
+  // 2. Handle login, only if not yet logged in
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
-    setSubmitting(true);
+    setMsg('');
+    setStatus('loading');
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setError('No Pass Admin or Admin Denied');
-      setTimeout(() => {
-        router.replace('/'); // Redirect to home after 2s
-      }, 2000);
+      setStatus('error');
+      setMsg('No Pass Admin or Admin Denied');
+      setTimeout(() => router.replace('/'), 2000);
     } else {
-      setSuccess('Admin login success. Redirecting...');
-      setTimeout(() => {
-        router.replace('/admin/dashboard');
-      }, 1800);
+      setStatus('success');
+      setMsg('Admin login success. Redirecting...');
+      setTimeout(() => router.replace('/admin/dashboard'), 1500);
     }
-    setSubmitting(false);
   };
+
+  if (status === 'loading') return null; // Important: do NOT render anything while checking status
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -63,39 +63,32 @@ export default function AdminLogin() {
           className="w-full mb-4 p-2 border border-gray-300 rounded focus:outline-none"
           type="email"
           value={email}
-          autoComplete="username"
           onChange={e => setEmail(e.target.value)}
           placeholder="Email"
           required
-          disabled={submitting}
+          disabled={status === 'loading' || status === 'success'}
         />
         <label className="block mb-2 font-medium">Password</label>
         <input
           className="w-full mb-4 p-2 border border-gray-300 rounded focus:outline-none"
           type="password"
           value={password}
-          autoComplete="current-password"
           onChange={e => setPassword(e.target.value)}
           placeholder="Password"
           required
-          disabled={submitting}
+          disabled={status === 'loading' || status === 'success'}
         />
-        {error && (
-          <div className="text-red-600 mb-2 text-center glass-card font-semibold animate-fade-in">
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="text-green-600 mb-2 text-center glass-card font-semibold animate-fade-in">
-            {success}
+        {msg && (
+          <div className={`mb-2 text-center glass-card font-semibold animate-fade-in ${status === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+            {msg}
           </div>
         )}
         <button
           type="submit"
           className="w-full bg-primary btn-3d text-white py-2 rounded hover:bg-primary-dark transition"
-          disabled={submitting || !!success}
+          disabled={status === 'loading' || status === 'success'}
         >
-          {submitting ? 'Logging In...' : 'Login'}
+          {status === 'success' ? 'Success!' : 'Login'}
         </button>
       </form>
     </div>
