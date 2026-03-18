@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
-// import { useAuthUser } from '@/lib/useAuthUser'; // if using the custom hook
 
 const supabase = createClient(
   'https://ehieczmqbhqrtnrtthob.supabase.co',
@@ -13,49 +12,55 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(undefined); // undefined: loading, null: not logged in, object: logged in
+  const [redirecting, setRedirecting] = useState(false);
   const router = useRouter();
 
-  // Effect: Check auth state (run on load and when login/logout happens)
+  // Check if the user is already logged in
   useEffect(() => {
     let mounted = true;
     async function checkUser() {
       const { data } = await supabase.auth.getUser();
-      if (mounted) setUser(data.user ?? null);
-      setLoading(false);
+      if (data.user && mounted) {
+        router.replace('/admin/dashboard');
+      }
     }
     checkUser();
-    // Listen for changes
-    const { data: listener } = supabase.auth.onAuthStateChange(() => checkUser());
-    return () => { mounted = false; listener.subscription.unsubscribe(); }
-  }, []);
+    return () => { mounted = false; };
+  }, [router]);
 
+  // When login succeeds, show popup then redirect
   useEffect(() => {
-    // redirect if logged in (do not redirect while page is still loading)
-    if (!loading && user) {
-      router.replace('/admin/dashboard');
+    if (success && !redirecting) {
+      setRedirecting(true);
+      const timer = setTimeout(() => {
+        router.replace('/admin/dashboard');
+      }, 1500); // show popup for 1.5s
+      return () => clearTimeout(timer);
     }
-  }, [user, loading, router]);
+  }, [success, redirecting, router]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess(false);
+    setRedirecting(false);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setError(error.message || 'Login failed');
-    else setSuccess(true);
-    // The auth listener will update user state and cause redirect
+    if (error) {
+      setError(error.message || 'Login failed');
+      setSuccess(false);
+    } else {
+      setSuccess(true);
+    }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <form
         onSubmit={handleLogin}
-        className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm"
+        className="bg-white glass-card p-8 rounded-lg shadow-lg w-full max-w-sm"
         autoComplete="off"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center gradient-text">Admin Login</h2>
         <label className="block mb-2 font-medium">Email</label>
         <input
           className="w-full mb-4 p-2 border border-gray-300 rounded focus:outline-none"
@@ -77,12 +82,17 @@ export default function AdminLogin() {
           required
         />
         {error && <div className="text-red-600 mb-2 text-center">{error}</div>}
-        {success && <div className="text-green-600 mb-2 text-center">Login successful! Redirecting…</div>}
+        {success && (
+          <div className="text-green-600 mb-2 text-center glass-card font-semibold animate-fade-in">
+            Login successful! Redirecting...
+          </div>
+        )}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          className="w-full bg-primary btn-3d text-white py-2 rounded hover:bg-primary-dark transition"
+          disabled={success}
         >
-          Login
+          {success ? 'Success!' : 'Login'}
         </button>
       </form>
     </div>
