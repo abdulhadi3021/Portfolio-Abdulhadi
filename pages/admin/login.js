@@ -10,47 +10,44 @@ const supabase = createClient(
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [redirecting, setRedirecting] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
   const router = useRouter();
 
-  // Check if the user is already logged in
+  // 1. If already logged in on mount, redirect to dashboard
   useEffect(() => {
     let mounted = true;
-    async function checkUser() {
+    (async () => {
       const { data } = await supabase.auth.getUser();
-      if (data.user && mounted) {
+      if (mounted && data.user) {
         router.replace('/admin/dashboard');
       }
-    }
-    checkUser();
+    })();
     return () => { mounted = false; };
   }, [router]);
 
-  // When login succeeds, show popup then redirect
-  useEffect(() => {
-    if (success && !redirecting) {
-      setRedirecting(true);
-      const timer = setTimeout(() => {
-        router.replace('/admin/dashboard');
-      }, 1500); // show popup for 1.5s
-      return () => clearTimeout(timer);
-    }
-  }, [success, redirecting, router]);
-
+  // 2. Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccess(false);
-    setRedirecting(false);
+    setSuccess('');
+    setSubmitting(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setError(error.message || 'Login failed');
-      setSuccess(false);
+      setError('No Pass Admin or Admin Denied');
+      setTimeout(() => {
+        router.replace('/'); // Redirect to home after 2s
+      }, 2000);
     } else {
-      setSuccess(true);
+      setSuccess('Admin login success. Redirecting...');
+      setTimeout(() => {
+        router.replace('/admin/dashboard');
+      }, 1800);
     }
+    setSubmitting(false);
   };
 
   return (
@@ -70,6 +67,7 @@ export default function AdminLogin() {
           onChange={e => setEmail(e.target.value)}
           placeholder="Email"
           required
+          disabled={submitting}
         />
         <label className="block mb-2 font-medium">Password</label>
         <input
@@ -80,19 +78,24 @@ export default function AdminLogin() {
           onChange={e => setPassword(e.target.value)}
           placeholder="Password"
           required
+          disabled={submitting}
         />
-        {error && <div className="text-red-600 mb-2 text-center">{error}</div>}
+        {error && (
+          <div className="text-red-600 mb-2 text-center glass-card font-semibold animate-fade-in">
+            {error}
+          </div>
+        )}
         {success && (
           <div className="text-green-600 mb-2 text-center glass-card font-semibold animate-fade-in">
-            Login successful! Redirecting...
+            {success}
           </div>
         )}
         <button
           type="submit"
           className="w-full bg-primary btn-3d text-white py-2 rounded hover:bg-primary-dark transition"
-          disabled={success}
+          disabled={submitting || !!success}
         >
-          {success ? 'Success!' : 'Login'}
+          {submitting ? 'Logging In...' : 'Login'}
         </button>
       </form>
     </div>
