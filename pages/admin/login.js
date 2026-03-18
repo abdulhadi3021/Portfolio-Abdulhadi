@@ -20,7 +20,7 @@ export default function AdminLogin() {
     });
   }, [router]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     const { error } = await supabase.auth.signInWithPassword({ email, password });
