@@ -32,7 +32,7 @@ export default function Dashboard() {
     return () => { mounted = false; };
   }, [router]);
 
-  // Load projects
+  // Load projects (fetch from Supabase)
   const loadProjects = async () => {
     setMsg('');
     const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
@@ -40,22 +40,22 @@ export default function Dashboard() {
     else setProjects(data || []);
   };
 
-  // handle add/update
+  // Add or Edit project
   const handleSubmit = async e => {
     e.preventDefault();
     setMsg('');
     if (!form.title) return setMsg('Title required');
     if (form.id) {
-      // edit
+      // Edit existing
       const { error } = await supabase.from('projects').update({
-        title: form.title, description: form.description, url: form.url,
+        title: form.title, description: form.description, url: form.url
       }).eq('id', form.id);
       if (error) setMsg('Failed to update.');
       else setMsg('Project updated!');
     } else {
-      // add new
+      // Add new
       const { error } = await supabase.from('projects').insert([{
-        title: form.title, description: form.description, url: form.url,
+        title: form.title, description: form.description, url: form.url
       }]);
       if (error) setMsg('Failed to add.');
       else setMsg('Project added!');
@@ -64,10 +64,10 @@ export default function Dashboard() {
     loadProjects();
   };
 
-  // handle edit start
+  // Start editing: fill form with project data
   const handleEdit = p => setForm({ ...p });
 
-  // handle delete
+  // Delete project
   const handleDelete = async id => {
     if (!window.confirm('Delete this project?')) return;
     const { error } = await supabase.from('projects').delete().eq('id', id);
@@ -94,9 +94,10 @@ export default function Dashboard() {
           <button onClick={handleLogout} className="btn-3d bg-red-500 text-white px-4 py-1 rounded hover:bg-red-400">Logout</button>
         </div>
 
+        {/* Message popup */}
         {msg && <div className="mb-4 text-center font-bold text-green-600">{msg}</div>}
 
-        {/* Add/Edit Form */}
+        {/* Add/Edit Project Form */}
         <form onSubmit={handleSubmit} className="mb-8 space-y-2 glass-card p-5 rounded">
           <input
             className="w-full p-2 border border-gray-300 rounded"
@@ -133,6 +134,7 @@ export default function Dashboard() {
           </div>
         </form>
 
+        {/* Project List */}
         <h2 className="text-xl font-semibold mb-2">All Projects</h2>
         {projects.length === 0 ? (
           <div>No projects yet.</div>
