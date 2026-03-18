@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
+// import { useAuthUser } from '@/lib/useAuthUser'; // if using the custom hook
 
 const supabase = createClient(
   'https://ehieczmqbhqrtnrtthob.supabase.co',
@@ -11,21 +12,40 @@ export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(undefined); // undefined: loading, null: not logged in, object: logged in
   const router = useRouter();
 
+  // Effect: Check auth state (run on load and when login/logout happens)
   useEffect(() => {
-    // Redirect if logged in
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) router.replace('/admin/dashboard');
-    });
-  }, [router]);
+    let mounted = true;
+    async function checkUser() {
+      const { data } = await supabase.auth.getUser();
+      if (mounted) setUser(data.user ?? null);
+      setLoading(false);
+    }
+    checkUser();
+    // Listen for changes
+    const { data: listener } = supabase.auth.onAuthStateChange(() => checkUser());
+    return () => { mounted = false; listener.subscription.unsubscribe(); }
+  }, []);
 
-const handleLogin = async (e) => {
+  useEffect(() => {
+    // redirect if logged in (do not redirect while page is still loading)
+    if (!loading && user) {
+      router.replace('/admin/dashboard');
+    }
+  }, [user, loading, router]);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess(false);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) setError(error.message || 'Login failed');
-    else router.replace('/admin/dashboard');
+    else setSuccess(true);
+    // The auth listener will update user state and cause redirect
   };
 
   return (
@@ -41,6 +61,7 @@ const handleLogin = async (e) => {
           className="w-full mb-4 p-2 border border-gray-300 rounded focus:outline-none"
           type="email"
           value={email}
+          autoComplete="username"
           onChange={e => setEmail(e.target.value)}
           placeholder="Email"
           required
@@ -50,11 +71,13 @@ const handleLogin = async (e) => {
           className="w-full mb-4 p-2 border border-gray-300 rounded focus:outline-none"
           type="password"
           value={password}
+          autoComplete="current-password"
           onChange={e => setPassword(e.target.value)}
           placeholder="Password"
           required
         />
         {error && <div className="text-red-600 mb-2 text-center">{error}</div>}
+        {success && <div className="text-green-600 mb-2 text-center">Login successful! Redirecting…</div>}
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
